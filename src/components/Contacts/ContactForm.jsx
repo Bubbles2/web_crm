@@ -22,14 +22,21 @@ const ContactForm = ({ onClose, initialData }) => {
         }
     }, [initialData]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (initialData) {
-            dispatch(updateContact(formData));
-        } else {
-            dispatch(addContact(formData));
+        try {
+            if (initialData) {
+                // Handle local id and DB contact_id
+                const id = initialData.contact_id || initialData.id;
+                await dispatch(updateContact({ ...formData, contact_id: id })).unwrap();
+            } else {
+                await dispatch(addContact(formData)).unwrap();
+            }
+            onClose();
+        } catch (err) {
+            console.error("Failed to save contact:", err);
+            alert("Failed to save contact");
         }
-        onClose();
     };
 
     return (
@@ -92,7 +99,7 @@ const ContactForm = ({ onClose, initialData }) => {
                         >
                             <option value="">None</option>
                             {leads.map(lead => (
-                                <option key={lead.id} value={lead.id}>{lead.name} ({lead.company || 'Unknown'})</option>
+                                <option key={lead.lead_id} value={lead.lead_id}>{lead.name} ({lead.company || 'Unknown'})</option>
                             ))}
                         </select>
                     </div>

@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import DealList from '../components/Deals/DealList';
 import DealForm from '../components/Deals/DealForm';
 import PageHeader from '../components/Layout/PageHeader';
 import { Plus, LayoutGrid, List } from 'lucide-react';
+import { fetchDeals } from '../store/slices/dealsSlice';
 
 const Deals = () => {
+    const dispatch = useDispatch();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingDeal, setEditingDeal] = useState(null);
     const [viewMode, setViewMode] = useState('card');
+
+    useEffect(() => {
+        dispatch(fetchDeals());
+    }, [dispatch]);
 
     const handleCreate = () => {
         setEditingDeal(null);

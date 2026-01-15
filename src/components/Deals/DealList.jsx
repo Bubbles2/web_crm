@@ -16,12 +16,15 @@ const DealList = ({ onEdit, viewMode = 'card' }) => {
     };
 
     const getLinkedEntityName = (deal) => {
-        if (deal.contactId) {
-            const contact = contacts.find(c => c.id === deal.contactId);
+        if (deal.contact_id || deal.contactId) {
+            const id = deal.contact_id || deal.contactId;
+            // Ensure ID comparison is robust (string vs number)
+            const contact = contacts.find(c => String(c.id || c.contact_id) === String(id));
             return contact ? `Contact: ${contact.name}` : 'Unknown Contact';
         }
-        if (deal.leadId) {
-            const lead = leads.find(l => l.id === deal.leadId);
+        if (deal.lead_id || deal.leadId) {
+            const id = deal.lead_id || deal.leadId;
+            const lead = leads.find(l => String(l.id || l.lead_id) === String(id));
             return lead ? `Lead: ${lead.name}` : 'Unknown Lead';
         }
         return 'Unassigned';
@@ -36,6 +39,8 @@ const DealList = ({ onEdit, viewMode = 'card' }) => {
         if (stage === 'Closed Lost') return 'var(--color-danger)';
         return 'var(--color-primary)';
     };
+
+    const getDealId = (deal) => deal.deal_id || deal.id;
 
     if (viewMode === 'list') {
         return (
@@ -52,7 +57,7 @@ const DealList = ({ onEdit, viewMode = 'card' }) => {
                     </thead>
                     <tbody>
                         {deals.map(deal => (
-                            <tr key={deal.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                            <tr key={getDealId(deal)} style={{ borderBottom: '1px solid var(--color-border)' }}>
                                 <td style={{ padding: 'var(--spacing-md)', color: 'var(--color-primary-dark)', fontWeight: 500 }}>{deal.title}</td>
                                 <td style={{ padding: 'var(--spacing-md)', fontWeight: 'bold' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -77,7 +82,7 @@ const DealList = ({ onEdit, viewMode = 'card' }) => {
                                         <button onClick={() => onEdit(deal)} style={{ color: 'var(--color-text-muted)', border: 'none', background: 'none', cursor: 'pointer' }} title="Edit">
                                             <Pencil size={18} />
                                         </button>
-                                        <button onClick={() => handleDelete(deal.id)} style={{ color: 'var(--color-danger)', border: 'none', background: 'none', cursor: 'pointer' }} title="Delete">
+                                        <button onClick={() => handleDelete(getDealId(deal))} style={{ color: 'var(--color-danger)', border: 'none', background: 'none', cursor: 'pointer' }} title="Delete">
                                             <Trash2 size={18} />
                                         </button>
                                     </div>
@@ -93,7 +98,7 @@ const DealList = ({ onEdit, viewMode = 'card' }) => {
     return (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 'var(--spacing-lg)' }}>
             {deals.map(deal => (
-                <div key={deal.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+                <div key={getDealId(deal)} className="card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <h3 style={{ color: 'var(--color-primary-dark)' }}>{deal.title}</h3>
                         <span style={{
@@ -116,7 +121,7 @@ const DealList = ({ onEdit, viewMode = 'card' }) => {
                         <button onClick={() => onEdit(deal)} style={{ color: 'var(--color-text-muted)', padding: '4px' }}>
                             <Pencil size={18} />
                         </button>
-                        <button onClick={() => handleDelete(deal.id)} style={{ color: 'var(--color-danger)', padding: '4px' }}>
+                        <button onClick={() => handleDelete(getDealId(deal))} style={{ color: 'var(--color-danger)', padding: '4px' }}>
                             <Trash2 size={18} />
                         </button>
                     </div>

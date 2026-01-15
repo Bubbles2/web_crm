@@ -11,7 +11,12 @@ app.use(express.json());
 
 // Routes
 const leadsRouter = require('./routes/leads');
+const contactsRouter = require('./routes/contacts');
 app.use('/leads', leadsRouter);
+
+const dealsRouter = require('./routes/deals');
+app.use('/deals', dealsRouter);
+app.use('/contacts', contactsRouter);
 
 const PORT = process.env.PORT || 5000;
 

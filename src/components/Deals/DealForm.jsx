@@ -12,19 +12,34 @@ const DealForm = ({ onClose, initialData }) => {
         title: '',
         amount: '',
         stage: 'Proposal',
-        contactId: '',
-        leadId: ''
+        contact_id: '',
+        lead_id: ''
     });
 
     useEffect(() => {
         if (initialData) {
-            setFormData(initialData);
+            setFormData({
+                ...initialData,
+                contact_id: initialData.contact_id || initialData.contactId || '',
+                lead_id: initialData.lead_id || initialData.leadId || ''
+            });
         }
     }, [initialData]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const payload = { ...formData, amount: Number(formData.amount) };
+        const payload = {
+            ...formData,
+            amount: Number(formData.amount),
+            // backend expects these names, ensure they are present
+            contact_id: formData.contact_id || null,
+            lead_id: formData.lead_id || null
+        };
+
+        // Remove camelCase versions if they exist to avoid confusion
+        delete payload.contactId;
+        delete payload.leadId;
+
         if (initialData) {
             dispatch(updateDeal(payload));
         } else {
@@ -81,12 +96,12 @@ const DealForm = ({ onClose, initialData }) => {
                         <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)' }}>Associate with Contact (Optional)</label>
                         <select
                             style={{ width: '100%', padding: 'var(--spacing-sm)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}
-                            value={formData.contactId || ''}
-                            onChange={e => setFormData({ ...formData, contactId: e.target.value, leadId: '' })} // Clear lead if contact selected (simplified logic)
+                            value={formData.contact_id || ''}
+                            onChange={e => setFormData({ ...formData, contact_id: e.target.value, lead_id: '' })} // Clear lead if contact selected
                         >
                             <option value="">None</option>
                             {contacts.map(c => (
-                                <option key={c.id} value={c.id}>{c.name}</option>
+                                <option key={c.id || c.contact_id} value={c.id || c.contact_id}>{c.name}</option>
                             ))}
                         </select>
                     </div>
@@ -95,13 +110,13 @@ const DealForm = ({ onClose, initialData }) => {
                         <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)' }}>Associate with Lead (Optional)</label>
                         <select
                             style={{ width: '100%', padding: 'var(--spacing-sm)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}
-                            value={formData.leadId || ''}
-                            onChange={e => setFormData({ ...formData, leadId: e.target.value, contactId: '' })}
-                            disabled={!!formData.contactId}
+                            value={formData.lead_id || ''}
+                            onChange={e => setFormData({ ...formData, lead_id: e.target.value, contact_id: '' })}
+                            disabled={!!formData.contact_id}
                         >
                             <option value="">None</option>
                             {leads.map(l => (
-                                <option key={l.id} value={l.id}>{l.name}</option>
+                                <option key={l.id || l.lead_id} value={l.id || l.lead_id}>{l.name}</option>
                             ))}
                         </select>
                     </div>
