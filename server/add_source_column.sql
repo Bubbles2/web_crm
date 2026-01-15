@@ -1,0 +1,2 @@
+
+ALTER TABLE leads ADD COLUMN source VARCHAR(50);

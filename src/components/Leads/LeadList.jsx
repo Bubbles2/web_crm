@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { deleteLead, convertLeadStatus } from '../../store/slices/leadsSlice';
+import { deleteLead, convertLeadStatus, fetchLeads } from '../../store/slices/leadsSlice';
 import { addContact } from '../../store/slices/contactsSlice';
 import { Pencil, Trash2, Mail, UserPlus, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +9,10 @@ const LeadList = ({ onEdit, viewMode = 'card' }) => {
     const leads = useSelector(state => state.leads.items);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        dispatch(fetchLeads());
+    }, [dispatch]);
 
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this lead?')) {
@@ -25,10 +29,10 @@ const LeadList = ({ onEdit, viewMode = 'card' }) => {
                 phone: '', // Lead didn't have phone in state, would be nice to add
                 role: 'Lead Converted',
                 company: 'Unknown',
-                linkedLeadId: lead.id
+                linkedLeadId: lead.lead_id
             }));
             // Update lead status
-            dispatch(convertLeadStatus({ id: lead.id }));
+            dispatch(convertLeadStatus({ id: lead.lead_id }));
             navigate('/contacts');
         }
     };
@@ -59,7 +63,7 @@ const LeadList = ({ onEdit, viewMode = 'card' }) => {
                     </thead>
                     <tbody>
                         {leads.map(lead => (
-                            <tr key={lead.id} style={{ borderBottom: '1px solid var(--color-border)', opacity: lead.status === 'Converted' ? 0.7 : 1 }}>
+                            <tr key={lead.lead_id} style={{ borderBottom: '1px solid var(--color-border)', opacity: lead.status === 'Converted' ? 0.7 : 1 }}>
                                 <td style={{ padding: 'var(--spacing-md)', color: 'var(--color-primary-dark)', fontWeight: 500 }}>{lead.name}</td>
                                 <td style={{ padding: 'var(--spacing-md)' }}>
                                     <span style={{
@@ -81,7 +85,7 @@ const LeadList = ({ onEdit, viewMode = 'card' }) => {
                                                 <UserPlus size={18} />
                                             </button>
                                         )}
-                                        <button onClick={() => handleDelete(lead.id)} style={{ color: 'var(--color-danger)', border: 'none', background: 'none', cursor: 'pointer' }} title="Delete">
+                                        <button onClick={() => handleDelete(lead.lead_id)} style={{ color: 'var(--color-danger)', border: 'none', background: 'none', cursor: 'pointer' }} title="Delete">
                                             <Trash2 size={18} />
                                         </button>
                                     </div>
@@ -97,7 +101,7 @@ const LeadList = ({ onEdit, viewMode = 'card' }) => {
     return (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 'var(--spacing-lg)' }}>
             {leads.map(lead => (
-                <div key={lead.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)', opacity: lead.status === 'Converted' ? 0.7 : 1 }}>
+                <div key={lead.lead_id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)', opacity: lead.status === 'Converted' ? 0.7 : 1 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <h3 style={{ color: 'var(--color-primary-dark)' }}>{lead.name}</h3>
                         <span style={{
@@ -124,7 +128,7 @@ const LeadList = ({ onEdit, viewMode = 'card' }) => {
                                 <UserPlus size={16} /> Convert
                             </button>
                         )}
-                        <button onClick={() => handleDelete(lead.id)} style={{ color: 'var(--color-danger)' }}>
+                        <button onClick={() => handleDelete(lead.lead_id)} style={{ color: 'var(--color-danger)' }}>
                             <Trash2 size={16} />
                         </button>
                     </div>

@@ -19,14 +19,21 @@ const LeadForm = ({ onClose, initialData }) => {
         }
     }, [initialData]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (initialData) {
-            dispatch(updateLead(formData));
-        } else {
-            dispatch(addLead(formData));
+        try {
+            if (initialData) {
+                // Handle both id (from local) and lead_id (from DB)
+                const id = initialData.lead_id || initialData.id;
+                await dispatch(updateLead({ ...formData, lead_id: id })).unwrap();
+            } else {
+                await dispatch(addLead(formData)).unwrap();
+            }
+            onClose();
+        } catch (err) {
+            console.error('Failed to save lead:', err);
+            alert('Failed to save lead');
         }
-        onClose();
     };
 
     return (
