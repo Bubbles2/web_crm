@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { deleteDeal } from '../../store/slices/dealsSlice';
 import { Pencil, Trash2, DollarSign, Briefcase } from 'lucide-react';
 
-const DealList = ({ onEdit }) => {
+const DealList = ({ onEdit, viewMode = 'card' }) => {
     const deals = useSelector(state => state.deals.items);
     const contacts = useSelector(state => state.contacts.items);
     const leads = useSelector(state => state.leads.items);
@@ -36,6 +36,59 @@ const DealList = ({ onEdit }) => {
         if (stage === 'Closed Lost') return 'var(--color-danger)';
         return 'var(--color-primary)';
     };
+
+    if (viewMode === 'list') {
+        return (
+            <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-border)' }}>
+                        <tr>
+                            <th style={{ padding: 'var(--spacing-md)', textAlign: 'left', fontWeight: 600 }}>Title</th>
+                            <th style={{ padding: 'var(--spacing-md)', textAlign: 'left', fontWeight: 600 }}>Value</th>
+                            <th style={{ padding: 'var(--spacing-md)', textAlign: 'left', fontWeight: 600 }}>Stage</th>
+                            <th style={{ padding: 'var(--spacing-md)', textAlign: 'left', fontWeight: 600 }}>Related To</th>
+                            <th style={{ padding: 'var(--spacing-md)', textAlign: 'right', fontWeight: 600 }}>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {deals.map(deal => (
+                            <tr key={deal.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                                <td style={{ padding: 'var(--spacing-md)', color: 'var(--color-primary-dark)', fontWeight: 500 }}>{deal.title}</td>
+                                <td style={{ padding: 'var(--spacing-md)', fontWeight: 'bold' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <DollarSign size={16} color="var(--color-accent)" /> {formattedAmount(deal.amount)}
+                                    </div>
+                                </td>
+                                <td style={{ padding: 'var(--spacing-md)' }}>
+                                    <span style={{
+                                        fontSize: '0.8rem', padding: '2px 8px', borderRadius: '12px',
+                                        backgroundColor: getStageColor(deal.stage), color: 'white'
+                                    }}>
+                                        {deal.stage}
+                                    </span>
+                                </td>
+                                <td style={{ padding: 'var(--spacing-md)', color: 'var(--color-text-muted)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>
+                                        <Briefcase size={16} /> {getLinkedEntityName(deal)}
+                                    </div>
+                                </td>
+                                <td style={{ padding: 'var(--spacing-md)', textAlign: 'right' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--spacing-md)' }}>
+                                        <button onClick={() => onEdit(deal)} style={{ color: 'var(--color-text-muted)', border: 'none', background: 'none', cursor: 'pointer' }} title="Edit">
+                                            <Pencil size={18} />
+                                        </button>
+                                        <button onClick={() => handleDelete(deal.id)} style={{ color: 'var(--color-danger)', border: 'none', background: 'none', cursor: 'pointer' }} title="Delete">
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
 
     return (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 'var(--spacing-lg)' }}>

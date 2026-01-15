@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { deleteContact } from '../../store/slices/contactsSlice';
 import { Pencil, Trash2, Mail, Phone, Building } from 'lucide-react';
 
-const ContactList = ({ onEdit }) => {
+const ContactList = ({ onEdit, viewMode = 'card' }) => {
     const contacts = useSelector(state => state.contacts.items);
     const dispatch = useDispatch();
 
@@ -12,6 +12,47 @@ const ContactList = ({ onEdit }) => {
             dispatch(deleteContact(id));
         }
     };
+
+
+    if (viewMode === 'list') {
+        return (
+            <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-border)' }}>
+                        <tr>
+                            <th style={{ padding: 'var(--spacing-md)', textAlign: 'left', fontWeight: 600 }}>Name</th>
+                            <th style={{ padding: 'var(--spacing-md)', textAlign: 'left', fontWeight: 600 }}>Role</th>
+                            <th style={{ padding: 'var(--spacing-md)', textAlign: 'left', fontWeight: 600 }}>Company</th>
+                            <th style={{ padding: 'var(--spacing-md)', textAlign: 'left', fontWeight: 600 }}>Email</th>
+                            <th style={{ padding: 'var(--spacing-md)', textAlign: 'left', fontWeight: 600 }}>Phone</th>
+                            <th style={{ padding: 'var(--spacing-md)', textAlign: 'right', fontWeight: 600 }}>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {contacts.map(contact => (
+                            <tr key={contact.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                                <td style={{ padding: 'var(--spacing-md)', color: 'var(--color-primary-dark)', fontWeight: 500 }}>{contact.name}</td>
+                                <td style={{ padding: 'var(--spacing-md)', color: 'var(--color-text-muted)' }}>{contact.role}</td>
+                                <td style={{ padding: 'var(--spacing-md)', color: 'var(--color-text-muted)' }}>{contact.company}</td>
+                                <td style={{ padding: 'var(--spacing-md)', color: 'var(--color-text-muted)' }}>{contact.email}</td>
+                                <td style={{ padding: 'var(--spacing-md)', color: 'var(--color-text-muted)' }}>{contact.phone}</td>
+                                <td style={{ padding: 'var(--spacing-md)', textAlign: 'right' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--spacing-md)' }}>
+                                        <button onClick={() => onEdit(contact)} style={{ color: 'var(--color-text-muted)', border: 'none', background: 'none', cursor: 'pointer' }} title="Edit">
+                                            <Pencil size={18} />
+                                        </button>
+                                        <button onClick={() => handleDelete(contact.id)} style={{ color: 'var(--color-danger)', border: 'none', background: 'none', cursor: 'pointer' }} title="Delete">
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
 
     return (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 'var(--spacing-lg)' }}>

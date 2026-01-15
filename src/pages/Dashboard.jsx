@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Users, Target, Briefcase, DollarSign } from 'lucide-react';
+import PageHeader from '../components/Layout/PageHeader';
 
 const StatCard = ({ title, value, icon: Icon, color }) => (
     <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
@@ -35,16 +36,10 @@ const Dashboard = () => {
 
     return (
         <div>
-            <div style={{
-                marginBottom: 'var(--spacing-xl)',
-                padding: 'var(--spacing-xl)',
-                borderRadius: 'var(--radius-lg)',
-                background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))',
-                color: 'white'
-            }}>
-                <h1>Welcome Back!</h1>
-                <p>Here is what's happening in your CRM today.</p>
-            </div>
+            <PageHeader
+                title="Welcome Back!"
+                subtitle="Here is what's happening in your CRM today."
+            />
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--spacing-lg)', marginBottom: 'var(--spacing-xl)' }}>
                 <StatCard title="Total Contacts" value={totalContacts} icon={Users} color="var(--color-primary)" />
